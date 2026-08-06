@@ -4,29 +4,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teste de background</title>
+    <title>Lucas Silva — Portfólio</title>
     <link rel="stylesheet" href="index.css">
 </head>
 
 <body>
-    <div class="texto">
-        <h1>LOGIN</h1>
-        <form class="form-test">
-            <label for="">
-                <h2>USER</h2>
-                <input type="text">
-            </label>
-            <label for="">
-                <h2>PASSWORD</h2>
-                <input type="password">
-            </label>
-            <button>Acessar</button>
-        </form>
-    </div>
-
     <video autoplay muted loop id="video-background">
         <source src="midia/dark.mp4">
     </video>
+    <canvas id="text-video"></canvas>
+    <main>
+        <section class="hero container-name">
+            <div class="hero-title">
+                <h1>LUCAS SILVA</h1>
+                <p>DESENVOLVEDOR FULL STACK</p>
+            </div><span class="scroll-hint">role para explorar ↓</span>
+        </section>
+        <section class="content-section" data-parallax="0.12" id="sobre">
+            <p class="section-label reveal-fade">01 — Sobre mim</p>
+            <h2><span class="reveal-side reveal-left">Construo experiências</span><br><em class="reveal-side reveal-right">digitais com propósito.</em></h2>
+            <p class="section-text reveal-fade">Sou um profissional apaixonado por tecnologia e criação. Ao longo da minha jornada,
+                transformo ideias em soluções digitais funcionais, bonitas e focadas em pessoas.</p>
+        </section>
+        <section class="content-section projects-section" data-parallax="0.08" id="projetos">
+            <p class="section-label reveal-fade">02 — Projetos</p>
+            <h2 class="reveal-side reveal-left">Trabalhos selecionados</h2>
+            <div class="projects-grid">
+                <article class="project-card">
+                    <div class="project-preview preview-one"><span>Projeto 01</span></div>
+                    <div class="project-info">
+                        <h3>Nome do projeto</h3><a href="#">Em produção ↗</a>
+                    </div>
+                </article>
+                <article class="project-card">
+                    <div class="project-preview preview-two"><span>Projeto 02</span></div>
+                    <div class="project-info">
+                        <h3>Nome do projeto</h3><span>Em breve</span>
+                    </div>
+                </article>
+                <article class="project-card">
+                    <div class="project-preview preview-three"><span>Projeto 03</span></div>
+                    <div class="project-info">
+                        <h3>Nome do projeto</h3><a href="#">Em produção ↗</a>
+                    </div>
+                </article>
+            </div>
+        </section>
+        <section class="content-section contact-section" data-parallax="0.15" id="contatos">
+            <p class="section-label reveal-fade">03 — Meus contatos</p>
+            <h2><span class="reveal-side reveal-right">Vamos criar algo</span><br><em class="reveal-side reveal-left">juntos?</em></h2>
+            <div class="contact-links"><a href="#">WhatsApp <span>↗</span></a><a href="#">LinkedIn <span>↗</span></a><a
+                    href="#">GitHub <span>↗</span></a><a href="mailto:seuemail@email.com">E-mail <span>↗</span></a>
+            </div>
+        </section>
+    </main>
+    <script src="script.js"></script>
 </body>
 
 </html>
