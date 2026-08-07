@@ -70,6 +70,18 @@ if (carouselCards.length) {
     updateCarousel();
 }
 
+document.querySelectorAll('.watch-video').forEach((button) => {
+    button.addEventListener('click', (event) => {
+        event.preventDefault();
+        const projectVideo = button.closest('.project-card').querySelector('video');
+        projectVideo.controls = true;
+        projectVideo.muted = false;
+        const fullscreen = projectVideo.requestFullscreen || projectVideo.webkitRequestFullscreen;
+        if (fullscreen) fullscreen.call(projectVideo);
+        projectVideo.play();
+    });
+});
+
 function resizeCanvas() {
     const ratio = window.devicePixelRatio || 1;
     canvas.width = window.innerWidth * ratio;
