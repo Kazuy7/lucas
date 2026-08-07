@@ -8,6 +8,16 @@ const title = document.querySelector('.container-name h1');
 const subtitle = document.querySelector('.hero-title p');
 const scrollHint = document.querySelector('.scroll-hint');
 const aboutSection = document.querySelector('#sobre');
+const translations = {
+    pt: { role: 'DESENVOLVEDOR FULL STACK', scrollHint: 'role para explorar ↓', aboutLabel: '01 — Sobre mim', aboutTitle: 'Construo experiências', aboutTitleEm: 'digitais com propósito.', aboutText: 'Sou um profissional apaixonado por tecnologia e criação. Ao longo da minha jornada, transformo ideias em soluções digitais funcionais, bonitas e focadas em pessoas.', projectsLabel: '02 — Projetos', projectsTitle: 'Trabalhos selecionados', contactLabel: '03 — Meus contatos', contactTitle: 'Vamos criar algo', contactTitleEm: 'juntos?' },
+    en: { role: 'FULL STACK DEVELOPER', scrollHint: 'scroll to explore ↓', aboutLabel: '01 — About me', aboutTitle: 'I build experiences', aboutTitleEm: 'with purpose.', aboutText: 'I am a professional passionate about technology and creation. Throughout my journey, I turn ideas into functional, beautiful digital solutions focused on people.', projectsLabel: '02 — Projects', projectsTitle: 'Selected work', contactLabel: '03 — Get in touch', contactTitle: 'Let’s create something', contactTitleEm: 'together?' }
+};
+function setLanguage(language) {
+    document.querySelectorAll('[data-i18n]').forEach((element) => { element.textContent = translations[language][element.dataset.i18n]; });
+    document.querySelectorAll('.language-button').forEach((button) => button.classList.toggle('active', button.dataset.language === language));
+    document.documentElement.lang = language === 'en' ? 'en' : 'pt-br';
+}
+document.querySelectorAll('.language-button').forEach((button) => button.addEventListener('click', () => setLanguage(button.dataset.language)));
 
 const aboutObserver = new IntersectionObserver(([entry]) => {
     scrollHint.classList.toggle('is-hidden', entry.isIntersecting);

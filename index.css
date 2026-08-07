@@ -18,6 +18,10 @@ body {
     font-family: 'Bruno Ace SC', sans-serif;
 }
 
+.language-switcher { position: fixed; top: 28px; right: 36px; z-index: 5; display: flex; gap: 7px; align-items: center; color: white; font-family: Arial, sans-serif; font-size: .7rem; letter-spacing: .08em; }
+.language-button { border: 0; padding: 4px; color: rgba(255,255,255,.45); background: transparent; font: inherit; cursor: pointer; }
+.language-button.active, .language-button:hover { color: white; }
+
 #video-background {
     position: fixed;
     inset: 0;
