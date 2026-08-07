@@ -24,6 +24,42 @@ const contentObserver = new IntersectionObserver((entries) => {
 
 animatedContent.forEach((element) => contentObserver.observe(element));
 
+const carouselCards = [...document.querySelectorAll('.project-card')];
+let carouselIndex = 0;
+const previousButton = document.querySelector('#carousel-prev');
+const nextButton = document.querySelector('#carousel-next');
+const dotsContainer = document.querySelector('.carousel-dots');
+
+function updateCarousel() {
+    carouselCards.forEach((card, index) => {
+        card.classList.remove('carousel-active', 'carousel-left', 'carousel-right');
+        if (index === carouselIndex) card.classList.add('carousel-active');
+        else if (index === (carouselIndex - 1 + carouselCards.length) % carouselCards.length) card.classList.add('carousel-left');
+        else if (index === (carouselIndex + 1) % carouselCards.length) card.classList.add('carousel-right');
+        else card.classList.add(index < carouselIndex ? 'carousel-left' : 'carousel-right');
+    });
+    dotsContainer.querySelectorAll('.carousel-dot').forEach((dot, index) => dot.classList.toggle('active', index === carouselIndex));
+}
+
+if (carouselCards.length) {
+    carouselCards.forEach((_, index) => {
+        const dot = document.createElement('button');
+        dot.className = 'carousel-dot';
+        dot.setAttribute('aria-label', `Ir para o projeto ${index + 1}`);
+        dot.addEventListener('click', () => { carouselIndex = index; updateCarousel(); });
+        dotsContainer.appendChild(dot);
+    });
+    previousButton.addEventListener('click', () => {
+        carouselIndex = (carouselIndex - 1 + carouselCards.length) % carouselCards.length;
+        updateCarousel();
+    });
+    nextButton.addEventListener('click', () => {
+        carouselIndex = (carouselIndex + 1) % carouselCards.length;
+        updateCarousel();
+    });
+    updateCarousel();
+}
+
 function resizeCanvas() {
     const ratio = window.devicePixelRatio || 1;
     canvas.width = window.innerWidth * ratio;
