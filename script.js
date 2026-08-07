@@ -8,9 +8,69 @@ const title = document.querySelector('.container-name h1');
 const subtitle = document.querySelector('.hero-title p');
 const scrollHint = document.querySelector('.scroll-hint');
 const aboutSection = document.querySelector('#sobre');
+const customCursor = document.querySelector('#custom-cursor');
+const interactiveElements = document.querySelectorAll('a, button, video');
+let cursorX = 0;
+let cursorY = 0;
+let cursorRenderX = 0;
+let cursorRenderY = 0;
+
+function animateCursor() {
+    cursorRenderX += (cursorX - cursorRenderX) * .18;
+    cursorRenderY += (cursorY - cursorRenderY) * .18;
+    customCursor.style.left = `${cursorRenderX}px`;
+    customCursor.style.top = `${cursorRenderY}px`;
+    requestAnimationFrame(animateCursor);
+}
+
+window.addEventListener('mousemove', (event) => {
+    cursorX = event.clientX;
+    cursorY = event.clientY;
+    customCursor.classList.add('is-visible');
+});
+window.addEventListener('mouseleave', () => customCursor.classList.remove('is-visible'));
+interactiveElements.forEach((element) => {
+    element.addEventListener('mouseenter', () => customCursor.classList.add('is-hovering'));
+    element.addEventListener('mouseleave', () => customCursor.classList.remove('is-hovering'));
+});
+animateCursor();
+const scrollDots = [...document.querySelectorAll('.scroll-dots span')];
+let scrollTarget = 0;
+let scrollVelocity = 0;
+let previousScroll = window.scrollY;
+const dotOffsets = scrollDots.map(() => 0);
+
+function updateScrollDots() {
+    scrollTarget = window.scrollY;
+    scrollVelocity = window.scrollY - previousScroll;
+    previousScroll = window.scrollY;
+}
+
+function animateScrollDots() {
+    const scrollable = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    const progress = scrollTarget / scrollable;
+    const dotsContainer = document.querySelector('.scroll-dots');
+    const availableSpace = Math.max(0, window.innerHeight - 48 - dotsContainer.offsetHeight);
+    dotsContainer.style.transform = `translateY(${progress * availableSpace}px)`;
+    const separation = Math.min(48, Math.abs(scrollVelocity) * .8);
+
+    scrollDots.forEach((dot, index) => {
+        const follow = index / (scrollDots.length - 1);
+        const targetOffset = separation * follow;
+        dotOffsets[index] += (targetOffset - dotOffsets[index]) * .14;
+        dot.style.transform = `translateY(${dotOffsets[index]}px)`;
+    });
+
+    scrollVelocity *= .88;
+    requestAnimationFrame(animateScrollDots);
+}
+
+window.addEventListener('scroll', updateScrollDots, { passive: true });
+window.addEventListener('resize', updateScrollDots);
+animateScrollDots();
 const translations = {
-    pt: { role: 'DESENVOLVEDOR FULL STACK', scrollHint: 'role para explorar ↓', aboutLabel: '01 — Sobre mim', aboutTitle: 'Construo experiências', aboutTitleEm: 'digitais com propósito.', aboutText: 'Sou um profissional apaixonado por tecnologia e criação. Ao longo da minha jornada, transformo ideias em soluções digitais funcionais, bonitas e focadas em pessoas.', projectsLabel: '02 — Projetos', projectsTitle: 'Trabalhos selecionados', contactLabel: '03 — Meus contatos', contactTitle: 'Vamos criar algo', contactTitleEm: 'juntos?' },
-    en: { role: 'FULL STACK DEVELOPER', scrollHint: 'scroll to explore ↓', aboutLabel: '01 — About me', aboutTitle: 'I build experiences', aboutTitleEm: 'with purpose.', aboutText: 'I am a professional passionate about technology and creation. Throughout my journey, I turn ideas into functional, beautiful digital solutions focused on people.', projectsLabel: '02 — Projects', projectsTitle: 'Selected work', contactLabel: '03 — Get in touch', contactTitle: 'Let’s create something', contactTitleEm: 'together?' }
+    pt: { role: 'DESENVOLVEDOR FULL STACK', scrollHint: 'role para explorar ↓', aboutLabel: '01 — Sobre mim', aboutTitle: 'Construo experiências', aboutTitleEm: 'digitais com propósito.', aboutText: 'Sou formado em Gestão da Tecnologia da Informação e atuo há mais de 3 anos no mercado como programador. Sou apaixonado por tecnologia e criação, transformando ideias em soluções digitais funcionais, bonitas e focadas em pessoas. Ao longo da minha jornada, venho desenvolvendo experiências que unem código, usabilidade e criatividade.', projectsLabel: '02 — Projetos', projectsTitle: 'Trabalhos selecionados', contactLabel: '03 — Meus contatos', contactTitle: 'Vamos criar algo', contactTitleEm: 'juntos?' },
+    en: { role: 'FULL STACK DEVELOPER', scrollHint: 'scroll to explore ↓', aboutLabel: '01 — About me', aboutTitle: 'I build experiences', aboutTitleEm: 'with purpose.', aboutText: 'I have a degree in Information Technology Management and have been working as a programmer for over 3 years. I am passionate about technology and creation, turning ideas into functional, beautiful digital solutions focused on people. Throughout my journey, I have developed experiences that bring together code, usability, and creativity.', projectsLabel: '02 — Projects', projectsTitle: 'Selected work', contactLabel: '03 — Get in touch', contactTitle: 'Let’s create something', contactTitleEm: 'together?' }
 };
 function setLanguage(language) {
     document.querySelectorAll('[data-i18n]').forEach((element) => { element.textContent = translations[language][element.dataset.i18n]; });

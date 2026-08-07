@@ -18,8 +18,14 @@
 </head>
 
 <body>
+    <div id="custom-cursor" aria-hidden="true"><span></span></div>
+    <div class="scroll-dots" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+    </div>
     <div class="language-switcher" aria-label="Seleção de idioma">
-        <button class="language-button active" data-language="pt">PT</button><span>/</span><button class="language-button" data-language="en">EN</button>
+        <button class="language-button active" data-language="pt">PT</button><button class="language-button"
+            data-language="en">EN</button>
     </div>
     <video autoplay muted loop id="video-background">
         <source src="midia/fumaca-negra.mp4">
@@ -36,33 +42,68 @@
             <p class="section-label reveal-fade" data-i18n="aboutLabel">01 — Sobre mim</p>
             <h2><span class="reveal-side reveal-left" data-i18n="aboutTitle">Construo experiências</span><br><em
                     class="reveal-side reveal-right" data-i18n="aboutTitleEm">digitais com propósito.</em></h2>
-            <p class="section-text reveal-fade" data-i18n="aboutText">Sou um profissional apaixonado por tecnologia e criação. Ao longo da
-                minha jornada,
-                transformo ideias em soluções digitais funcionais, bonitas e focadas em pessoas.</p>
+            <p class="section-text reveal-fade" data-i18n="aboutText">Sou formado em Gestão da Tecnologia da Informação
+                e atuo há mais de 3 anos no mercado como programador. Sou apaixonado por tecnologia e criação,
+                transformando ideias em soluções digitais funcionais, bonitas e focadas em pessoas. Ao longo da minha
+                jornada, venho desenvolvendo experiências que unem código, usabilidade e criatividade.</p>
         </section>
         <section class="content-section projects-section" data-parallax="0.08" id="projetos">
-            <p class="section-label reveal-fade" data-i18n="projectsLabel">02 — Projetos</p>
-            <h2 class="reveal-side reveal-left" data-i18n="projectsTitle">Trabalhos selecionados</h2>
+            <div class="projects-heading">
+                <p class="section-label reveal-fade" data-i18n="projectsLabel">02 — Projetos</p>
+                <h2 class="reveal-side reveal-left" data-i18n="projectsTitle">Trabalhos selecionados</h2>
+            </div>
             <div class="projects-grid">
                 <article class="project-card">
-                    <div class="project-preview preview-one"><video autoplay muted loop playsinline><source src="midia/home.mp4" type="video/mp4"></video><div class="project-overlay"><strong>Home CPTEC</strong><p>Interface institucional para apresentar conteúdos e serviços meteorológicos. Desenvolvido com HTML, CSS e JavaScript.</p></div></div>
+                    <div class="project-preview preview-one"><video autoplay muted loop playsinline>
+                            <source src="midia/home.mp4" type="video/mp4">
+                        </video>
+                        <div class="project-overlay"><strong>Home CPTEC</strong>
+                            <p>Interface institucional para apresentar conteúdos e serviços meteorológicos. Desenvolvido
+                                com HTML, CSS e JavaScript.</p>
+                        </div>
+                    </div>
                     <div class="project-info">
                         <h3>Home CPTEC</h3><a href="https://www.cptec.inpe.br" target="_blank">Acesse ↗</a>
                     </div>
                 </article>
                 <article class="project-card">
-                    <div class="project-preview preview-three"><video autoplay muted loop playsinline><source src="midia/clima.mp4" type="video/mp4"></video><div class="project-overlay"><strong>Clima</strong><p>Aplicação para consulta de informações climáticas, com foco em visualização clara e navegação responsiva.</p></div></div>
+                    <div class="project-preview preview-three"><video autoplay muted loop playsinline>
+                            <source src="midia/clima.mp4" type="video/mp4">
+                        </video>
+                        <div class="project-overlay"><strong>Clima</strong>
+                            <p>Aplicação para consulta de informações climáticas, com foco em visualização clara e
+                                navegação responsiva.</p>
+                        </div>
+                    </div>
                     <div class="project-info">
                         <h3>Clima</h3><a href="https://clima.cptec.inpe.br" target="_blank">Acesse ↗</a>
                     </div>
                 </article>
                 <article class="project-card">
-                    <div class="project-preview preview-two"><video autoplay muted loop playsinline><source src="midia/linda-co.mp4" type="video/mp4"></video><div class="project-overlay"><strong>Linda Co</strong><p>Landing page criada como desafio técnico para uma candidatura front-end em uma empresa australiana. Desenvolvida com HTML, CSS e JavaScript.</p></div></div>
-                    <div class="project-info"><h3>Linda Co</h3><a href="#" class="watch-video">Assistir ↗</a></div>
+                    <div class="project-preview preview-two"><video autoplay muted loop playsinline>
+                            <source src="midia/linda-co.mp4" type="video/mp4">
+                        </video>
+                        <div class="project-overlay"><strong>Linda Co</strong>
+                            <p>Landing page criada como desafio técnico para uma candidatura front-end em uma empresa
+                                australiana. Desenvolvida com HTML, CSS e JavaScript.</p>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h3>Linda Co</h3><a href="#" class="watch-video">Assistir ↗</a>
+                    </div>
                 </article>
                 <article class="project-card">
-                    <div class="project-preview preview-two"><video autoplay muted loop playsinline><source src="midia/carros-rodovia-cartoon.mp4" type="video/mp4"></video><div class="project-overlay"><strong>Road Trip</strong><p>Projeto conceitual de experiência visual para viagens. Explora animação, ritmo e direção de arte digital.</p></div></div>
-                    <div class="project-info"><h3>Road Trip</h3><a href="#" class="watch-video">Assistir ↗</a></div>
+                    <div class="project-preview preview-two"><video autoplay muted loop playsinline>
+                            <source src="midia/carros-rodovia-cartoon.mp4" type="video/mp4">
+                        </video>
+                        <div class="project-overlay"><strong>Road Trip</strong>
+                            <p>Projeto conceitual de experiência visual para viagens. Explora animação, ritmo e direção
+                                de arte digital.</p>
+                        </div>
+                    </div>
+                    <div class="project-info">
+                        <h3>Road Trip</h3><a href="#" class="watch-video">Assistir ↗</a>
+                    </div>
                 </article>
             </div>
             <div class="carousel-controls" aria-label="Navegação dos projetos">
@@ -76,10 +117,26 @@
             <h2><span class="reveal-side reveal-right" data-i18n="contactTitle">Vamos criar algo</span><br><em
                     class="reveal-side reveal-left" data-i18n="contactTitleEm">juntos?</em></h2>
             <div class="contact-links">
-                <a href="#" aria-label="WhatsApp" data-label="WhatsApp" target="_blank"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.6 4.1 1.6 5.8L.2 24l6.5-1.7a11.8 11.8 0 0 0 5.4 1.3h.1c6.5 0 11.8-5.3 11.8-11.8 0-3.1-1.3-6.1-3.5-8.3ZM12.2 21.5c-1.7 0-3.4-.5-4.8-1.3l-.3-.2-3.9 1 1-3.8-.2-.3a9.7 9.7 0 1 1 8.2 4.6Zm5.3-7.3c-.3-.2-1.8-.9-2.1-1s-.5-.2-.7.2c-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-1.8-.9-3-1.6-4.2-3.6-.3-.5.3-.5.8-1.6.1-.2 0-.4 0-.6l-.9-2.1c-.2-.5-.5-.4-.7-.4h-.6c-.2 0-.6.1-.9.4-.3.3-1.1 1-1.1 2.5s1.1 2.9 1.3 3.1c.2.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.8.6-.1 1.8-.7 2.1-1.4.3-.7.3-1.3.2-1.4-.1-.1-.4-.2-.8-.4Z" /></svg></a>
-                <a href="mailto:lucas.goliveirass@gmail.com" aria-label="E-mail" data-label="E-mail" target="_blank"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1.5 4.5h21v15h-21v-15Zm2.1 2 8.4 6.1 8.4-6.1H3.6Zm16.8 11V9l-8.4 6.1L3.6 9v8.5h16.8Z" /></svg></a>
-                <a href="https://www.linkedin.com/in/lucas-silva-dev07/" aria-label="LinkedIn" data-label="LinkedIn" target="_blank"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.7 3.2a2.3 2.3 0 1 1-4.6 0 2.3 2.3 0 0 1 4.6 0ZM.3 8h4.3v13.7H.3V8Zm6.9 0h4.1v1.9h.1c.6-1.1 2-2.3 4.1-2.3 4.4 0 5.2 2.9 5.2 6.7v7.7h-4.3v-6.8c0-1.6 0-3.7-2.3-3.7s-2.7 1.8-2.7 3.6v6.9H7.2V8Z" /></svg></a>
-                <a href="https://github.com/Kazuy7" aria-label="GitHub" data-label="GitHub" target="_blank"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.7-1.3-1.7-1.1-.8.1-.8.1-.8 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.7 1.1.7 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z" /></svg></a>
+                <a href="https://wa.me/5512981097689" aria-label="WhatsApp" data-label="WhatsApp" target="_blank"><svg
+                        viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                            d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .3 5.3.3 11.8c0 2.1.6 4.1 1.6 5.8L.2 24l6.5-1.7a11.8 11.8 0 0 0 5.4 1.3h.1c6.5 0 11.8-5.3 11.8-11.8 0-3.1-1.3-6.1-3.5-8.3ZM12.2 21.5c-1.7 0-3.4-.5-4.8-1.3l-.3-.2-3.9 1 1-3.8-.2-.3a9.7 9.7 0 1 1 8.2 4.6Zm5.3-7.3c-.3-.2-1.8-.9-2.1-1s-.5-.2-.7.2c-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-1.8-.9-3-1.6-4.2-3.6-.3-.5.3-.5.8-1.6.1-.2 0-.4 0-.6l-.9-2.1c-.2-.5-.5-.4-.7-.4h-.6c-.2 0-.6.1-.9.4-.3.3-1.1 1-1.1 2.5s1.1 2.9 1.3 3.1c.2.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.8.6-.1 1.8-.7 2.1-1.4.3-.7.3-1.3.2-1.4-.1-.1-.4-.2-.8-.4Z" />
+                    </svg></a>
+                <a href="mailto:lucas.goliveirass@gmail.com" aria-label="E-mail" data-label="E-mail"
+                    target="_blank"><svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                            d="M1.5 4.5h21v15h-21v-15Zm2.1 2 8.4 6.1 8.4-6.1H3.6Zm16.8 11V9l-8.4 6.1L3.6 9v8.5h16.8Z" />
+                    </svg></a>
+                <a href="https://www.linkedin.com/in/lucas-silva-dev07/" aria-label="LinkedIn" data-label="LinkedIn"
+                    target="_blank"><svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                            d="M4.7 3.2a2.3 2.3 0 1 1-4.6 0 2.3 2.3 0 0 1 4.6 0ZM.3 8h4.3v13.7H.3V8Zm6.9 0h4.1v1.9h.1c.6-1.1 2-2.3 4.1-2.3 4.4 0 5.2 2.9 5.2 6.7v7.7h-4.3v-6.8c0-1.6 0-3.7-2.3-3.7s-2.7 1.8-2.7 3.6v6.9H7.2V8Z" />
+                    </svg></a>
+                <a href="https://github.com/Kazuy7" aria-label="GitHub" data-label="GitHub" target="_blank"><svg
+                        viewBox="0 0 24 24" aria-hidden="true">
+                        <path
+                            d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.7-1.3-1.7-1.1-.8.1-.8.1-.8 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.7 1.1.7 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z" />
+                    </svg></a>
             </div>
         </section>
     </main>
