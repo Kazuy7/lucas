@@ -16,8 +16,8 @@ let cursorRenderX = 0;
 let cursorRenderY = 0;
 
 function animateCursor() {
-    cursorRenderX += (cursorX - cursorRenderX) * .18;
-    cursorRenderY += (cursorY - cursorRenderY) * .18;
+    cursorRenderX = cursorX;
+    cursorRenderY = cursorY;
     customCursor.style.left = `${cursorRenderX}px`;
     customCursor.style.top = `${cursorRenderY}px`;
     requestAnimationFrame(animateCursor);
@@ -26,6 +26,10 @@ function animateCursor() {
 window.addEventListener('mousemove', (event) => {
     cursorX = event.clientX;
     cursorY = event.clientY;
+    cursorRenderX = cursorX;
+    cursorRenderY = cursorY;
+    customCursor.style.left = `${cursorX}px`;
+    customCursor.style.top = `${cursorY}px`;
     customCursor.classList.add('is-visible');
 });
 window.addEventListener('mouseleave', () => customCursor.classList.remove('is-visible'));
@@ -39,6 +43,10 @@ let scrollTarget = 0;
 let scrollVelocity = 0;
 let previousScroll = window.scrollY;
 const dotOffsets = scrollDots.map(() => 0);
+let videoScrollSpeed = 0;
+const baseVideoRate = 1;
+const maxVideoRate = 2.5;
+video.playbackRate = baseVideoRate;
 
 function updateScrollDots() {
     scrollTarget = window.scrollY;
@@ -62,6 +70,14 @@ function animateScrollDots() {
     });
 
     scrollVelocity *= .88;
+
+    // O vídeo sempre avança; a intensidade do scroll controla a aceleração.
+    videoScrollSpeed += (scrollVelocity - videoScrollSpeed) * .16;
+    if (Math.abs(videoScrollSpeed) < 0.02) videoScrollSpeed = 0;
+    if (video.readyState >= 2 && Number.isFinite(video.duration)) {
+        video.playbackRate = Math.min(maxVideoRate, baseVideoRate + Math.abs(videoScrollSpeed) * .035);
+        if (video.paused) video.play().catch(() => {});
+    }
     requestAnimationFrame(animateScrollDots);
 }
 
@@ -171,9 +187,7 @@ function drawVideoInText() {
     maskContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
     drawTextMask(title);
     drawTextMask(subtitle);
-    context.filter = 'invert(1)';
     context.drawImage(video, 0, 0, window.innerWidth, window.innerHeight);
-    context.filter = 'none';
     context.globalCompositeOperation = 'destination-in';
     context.drawImage(mask, 0, 0, window.innerWidth, window.innerHeight);
     context.globalCompositeOperation = 'source-over';
