@@ -418,6 +418,98 @@ h2.reveal-side {
     padding-bottom: 12vh;
 }
 
+.stack-section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.stack-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(260px, .85fr);
+    align-items: end;
+    gap: 48px;
+    margin-bottom: 72px;
+}
+
+.stack-heading h2,
+.stack-heading .section-text {
+    margin-bottom: 0;
+}
+
+.stack-marquee {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    overflow: hidden;
+    border-top: 1px solid rgba(255, 255, 255, .35);
+    border-bottom: 1px solid rgba(255, 255, 255, .35);
+    mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+}
+
+.stack-track {
+    display: flex;
+    width: max-content;
+    animation: stackMarquee 32s linear infinite;
+}
+
+.stack-icons {
+    display: flex;
+    align-items: center;
+    gap: clamp(48px, 7vw, 110px);
+    flex: 0 0 max-content;
+    padding: 42px 0 58px clamp(48px, 7vw, 110px);
+}
+
+.stack-icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    padding: 8px 0;
+    color: white;
+}
+
+.stack-icon::after {
+    content: attr(data-label);
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-top: 6px;
+    color: white;
+    font: .62rem Arial, sans-serif;
+    letter-spacing: .05em;
+    opacity: 0;
+    transform: translate(-50%, -4px);
+    transition: opacity .3s ease, transform .3s ease, color .3s ease;
+    white-space: nowrap;
+}
+
+.stack-icon img {
+    width: clamp(42px, 5vw, 68px);
+    height: clamp(42px, 5vw, 68px);
+    fill: white;
+    opacity: .78;
+    filter: brightness(0) invert(1);
+    transition: opacity .3s ease, transform .3s ease, filter .3s ease;
+}
+
+.stack-icon:hover::after {
+    color: white;
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+.stack-icon:hover img {
+    filter: brightness(0) saturate(100%) invert(11%) sepia(100%) saturate(7494%) hue-rotate(1deg) brightness(104%) contrast(116%);
+    opacity: 1;
+    transform: scale(1.12);
+}
+
+@keyframes stackMarquee {
+    to { transform: translateX(-50%); }
+}
+
 .contact-links {
     display: grid;
     grid-template-columns: repeat(4, auto);
@@ -529,6 +621,19 @@ h2.reveal-side {
     .project-preview {
         aspect-ratio: 16 / 9;
     }
+
+    .stack-heading {
+        display: block;
+        margin-bottom: 48px;
+    }
+
+    .stack-heading .section-text {
+        margin-top: 28px;
+    }
+
+    .stack-icons { gap: 42px; padding: 32px 8vw 48px; }
+
+    .stack-track { animation-duration: 24s; }
 
     .carousel-controls {
         margin-top: 18px;
