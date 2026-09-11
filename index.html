@@ -52,7 +52,7 @@
                 <img src="midia/lucas-ensaio.png" alt="Lucas Silva">
             </figure>
         </section>
-        <section class="content-section projects-section" data-parallax="0.08" id="projetos">
+        <template id="projects-data">
             <div class="projects-heading">
                 <p class="section-label reveal-fade" data-i18n="projectsLabel">02 — Projetos</p>
                 <h2 class="reveal-side reveal-left" data-i18n="projectsTitle">Trabalhos selecionados</h2>
@@ -76,7 +76,7 @@
                         </div>
                     </div>
                     <div class="project-info">
-                        <h3>Home CPTEC</h3><a href="https://www.cptec.inpe.br" target="_blank">Acesse ↗</a>
+                        <h3>Home CPTEC</h3><a href="https://www.cptec.inpe.br" target="_blank">Acessar ↗</a>
                     </div>
                 </article>
                 <article class="project-card">
@@ -92,7 +92,7 @@
                         </div>
                     </div>
                     <div class="project-info">
-                        <h3>Clima</h3><a href="https://clima.cptec.inpe.br" target="_blank">Acesse ↗</a>
+                        <h3>Clima</h3><a href="https://clima.cptec.inpe.br" target="_blank">Acessar ↗</a>
                     </div>
                 </article>
                 <article class="project-card">
@@ -151,12 +151,30 @@
                     </div>
                 </article>
             </div>
-            <div class="carousel-controls" aria-label="Navegação dos projetos">
-                <button class="carousel-button" id="carousel-prev" aria-label="Projeto anterior">‹</button>
-                <div class="carousel-dots"></div>
-                <button class="carousel-button" id="carousel-next" aria-label="Próximo projeto">›</button>
+        </template>
+        <section class="content-section projects-editorial-section" data-parallax="0.08" id="projetos-editorial">
+            <div class="editorial-heading">
+                <p class="section-label reveal-fade" data-i18n="projectsLabel">02 — Projetos</p>
+                <h2 class="reveal-side reveal-left" data-i18n="projectsTitle">Trabalhos selecionados</h2>
+                <p class="editorial-hint">passe o cursor para explorar</p>
             </div>
+            <div class="editorial-list" aria-label="Lista editorial de projetos"></div>
         </section>
+        <div class="project-modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="project-modal-title">
+            <div class="project-modal-backdrop" data-modal-close></div>
+            <div class="project-modal-panel">
+                <button class="project-modal-close" type="button" aria-label="Fechar descrição">×</button>
+                <video class="project-modal-video" controls muted playsinline></video>
+                <div class="project-modal-content">
+                    <h2 id="project-modal-title"></h2>
+                    <p class="project-modal-description"></p>
+                </div>
+            </div>
+            <div class="project-modal-navigation" aria-label="Navegação dos projetos">
+                <button class="project-modal-arrow" id="project-modal-prev" type="button" aria-label="Projeto anterior">←</button>
+                <button class="project-modal-arrow" id="project-modal-next" type="button" aria-label="Próximo projeto">→</button>
+            </div>
+        </div>
         <section class="content-section stack-section" data-parallax="0.1" id="stack">
             <p class="section-label reveal-fade" data-i18n="stackLabel">03 — Minha stack</p>
             <div class="stack-heading">
