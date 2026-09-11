@@ -136,53 +136,122 @@ const contentObserver = new IntersectionObserver((entries) => {
 
 animatedContent.forEach((element) => contentObserver.observe(element));
 
-const carouselCards = [...document.querySelectorAll('.project-card')];
-let carouselIndex = 0;
-const previousButton = document.querySelector('#carousel-prev');
-const nextButton = document.querySelector('#carousel-next');
-const dotsContainer = document.querySelector('.carousel-dots');
+const projectData = document.querySelector('#projects-data');
+const showcaseSourceCards = projectData ? [...projectData.content.querySelectorAll('.project-card')] : [];
 
-function updateCarousel() {
-    carouselCards.forEach((card, index) => {
-        card.classList.remove('carousel-active', 'carousel-left', 'carousel-right');
-        if (index === carouselIndex) card.classList.add('carousel-active');
-        else if (index === (carouselIndex - 1 + carouselCards.length) % carouselCards.length) card.classList.add('carousel-left');
-        else if (index === (carouselIndex + 1) % carouselCards.length) card.classList.add('carousel-right');
-        else card.classList.add(index < carouselIndex ? 'carousel-left' : 'carousel-right');
+const editorialList = document.querySelector('.editorial-list');
+
+if (editorialList && showcaseSourceCards.length) {
+    showcaseSourceCards.forEach((sourceCard, index) => {
+        const item = document.createElement('article');
+        item.className = 'editorial-item';
+        item.innerHTML = `<span class="editorial-number">${String(index + 1).padStart(2, '0')}</span>`;
+
+        const info = sourceCard.querySelector('.project-info').cloneNode(true);
+        const sourceLink = info.querySelector('a');
+        const accessLink = sourceLink.getAttribute('href') !== '#' ? sourceLink : null;
+        const preview = sourceCard.querySelector('.project-preview').cloneNode(true);
+        const description = sourceCard.querySelector('.project-overlay p').cloneNode(true);
+        const actions = document.createElement('div');
+        const watchButton = document.createElement('button');
+        const descriptionButton = document.createElement('button');
+        actions.className = 'editorial-actions';
+        watchButton.className = 'editorial-watch-button';
+        watchButton.type = 'button';
+        watchButton.innerHTML = 'Assistir <svg class="button-eye-icon" viewBox="0 0 16 12" aria-hidden="true"><path d="M1 6s2.2-4.5 7-4.5S15 6 15 6s-2.2 4.5-7 4.5S1 6 1 6Z"></path><circle cx="8" cy="6" r="2"></circle></svg>';
+        descriptionButton.className = 'editorial-description-button';
+        descriptionButton.type = 'button';
+        descriptionButton.textContent = 'Descrição +';
+        sourceLink.remove();
+        actions.append(watchButton, descriptionButton);
+        if (accessLink) {
+            accessLink.className = 'editorial-access-link';
+            accessLink.textContent = 'Acessar ↗';
+            actions.append(accessLink);
+        }
+        info.appendChild(actions);
+        description.className = 'editorial-description';
+        preview.classList.add('editorial-preview');
+        preview.querySelector('.project-overlay').remove();
+        info.appendChild(description);
+        item.append(info, preview);
+        editorialList.appendChild(item);
+
+        item.addEventListener('mouseenter', () => item.classList.add('is-active'));
+        item.addEventListener('mouseleave', () => item.classList.remove('is-active'));
+        item.addEventListener('mousemove', (event) => {
+            if (window.matchMedia('(hover: none), (pointer: coarse)').matches) return;
+            preview.style.left = `${event.clientX}px`;
+            preview.style.top = `${event.clientY}px`;
+        });
+        watchButton.addEventListener('click', () => openProjectModal(item, true));
+        descriptionButton.addEventListener('click', () => openProjectModal(item));
     });
-    dotsContainer.querySelectorAll('.carousel-dot').forEach((dot, index) => dot.classList.toggle('active', index === carouselIndex));
 }
 
-if (carouselCards.length) {
-    carouselCards.forEach((_, index) => {
-        const dot = document.createElement('button');
-        dot.className = 'carousel-dot';
-        dot.setAttribute('aria-label', `Ir para o projeto ${index + 1}`);
-        dot.addEventListener('click', () => { carouselIndex = index; updateCarousel(); });
-        dotsContainer.appendChild(dot);
+const projectModal = document.querySelector('.project-modal');
+const projectModalPanel = document.querySelector('.project-modal-panel');
+const projectModalVideo = document.querySelector('.project-modal-video');
+const projectModalTitle = document.querySelector('#project-modal-title');
+const projectModalDescription = document.querySelector('.project-modal-description');
+const projectModalItems = [...document.querySelectorAll('.editorial-item')];
+const projectModalPrevious = document.querySelector('#project-modal-prev');
+const projectModalNext = document.querySelector('#project-modal-next');
+let projectModalIndex = 0;
+const closeProjectModal = () => {
+    if (document.fullscreenElement && document.exitFullscreen) {
+        const fullscreenExit = document.exitFullscreen();
+        if (fullscreenExit?.catch) fullscreenExit.catch(() => {});
+    }
+    projectModal.classList.remove('is-open');
+    projectModal.setAttribute('aria-hidden', 'true');
+    projectModalVideo.pause();
+    projectModalVideo.removeAttribute('src');
+    projectModalVideo.load();
+};
+const renderProjectModal = (item) => {
+    const sourceVideo = item.querySelector('.editorial-preview video');
+    projectModalTitle.textContent = item.querySelector('.project-info h3').textContent;
+    projectModalDescription.textContent = item.querySelector('.editorial-description').textContent.trim();
+    projectModalVideo.src = sourceVideo.currentSrc || sourceVideo.querySelector('source').src;
+    projectModalVideo.load();
+    projectModalVideo.play().catch(() => {});
+};
+const openProjectModal = (item, startFullscreen = false) => {
+    projectModalIndex = projectModalItems.indexOf(item);
+    renderProjectModal(item);
+    projectModalVideo.controls = true;
+    projectModalVideo.muted = !startFullscreen;
+    projectModal.classList.add('is-open');
+    projectModal.setAttribute('aria-hidden', 'false');
+    if (startFullscreen) {
+        const requestFullscreen = projectModal.requestFullscreen || projectModal.webkitRequestFullscreen;
+        if (requestFullscreen) {
+            const fullscreenRequest = requestFullscreen.call(projectModal);
+            if (fullscreenRequest?.catch) fullscreenRequest.catch(() => {});
+        }
+    }
+};
+
+if (projectModal) {
+    projectModal.querySelector('.project-modal-close').addEventListener('click', closeProjectModal);
+    projectModal.querySelector('[data-modal-close]').addEventListener('click', closeProjectModal);
+    projectModalPrevious.addEventListener('click', () => {
+        projectModalIndex = (projectModalIndex - 1 + projectModalItems.length) % projectModalItems.length;
+        renderProjectModal(projectModalItems[projectModalIndex]);
     });
-    previousButton.addEventListener('click', () => {
-        carouselIndex = (carouselIndex - 1 + carouselCards.length) % carouselCards.length;
-        updateCarousel();
+    projectModalNext.addEventListener('click', () => {
+        projectModalIndex = (projectModalIndex + 1) % projectModalItems.length;
+        renderProjectModal(projectModalItems[projectModalIndex]);
     });
-    nextButton.addEventListener('click', () => {
-        carouselIndex = (carouselIndex + 1) % carouselCards.length;
-        updateCarousel();
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && projectModal.classList.contains('is-open')) closeProjectModal();
+        if (!projectModal.classList.contains('is-open')) return;
+        if (event.key === 'ArrowLeft') projectModalPrevious.click();
+        if (event.key === 'ArrowRight') projectModalNext.click();
     });
-    updateCarousel();
 }
 
-document.querySelectorAll('.watch-video').forEach((button) => {
-    button.addEventListener('click', (event) => {
-        event.preventDefault();
-        const projectVideo = button.closest('.project-card').querySelector('video');
-        projectVideo.controls = true;
-        projectVideo.muted = false;
-        const fullscreen = projectVideo.requestFullscreen || projectVideo.webkitRequestFullscreen;
-        if (fullscreen) fullscreen.call(projectVideo);
-        projectVideo.play();
-    });
-});
 
 function resizeCanvas() {
     const ratio = window.devicePixelRatio || 1;
