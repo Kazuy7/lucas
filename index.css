@@ -19,7 +19,7 @@ html {
 body {
     margin: 0;
     color: white;
-    background: #080808;
+    background: #000;
     font-family: 'Bruno Ace SC', sans-serif;
     cursor: none;
 }
@@ -65,10 +65,10 @@ a, button, video { cursor: none !important; }
 }
 
 #video-background {
-    position: fixed;
+    position: absolute;
     inset: 0;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     object-fit: cover;
     z-index: 0;
     filter: blur(5px) grayscale(1) brightness(.5);
@@ -150,11 +150,45 @@ main {
 }
 
 .content-section {
+    position: relative;
     width: 100%;
     max-width: 1920px;
     margin: 0 auto;
     padding: 28vh clamp(28px, 6vw, 120px);
     transform: translateY(var(--parallax, 0));
+}
+
+.about-copy {
+    position: relative;
+    z-index: 1;
+    width: min(68%, 980px);
+}
+
+.about-portrait {
+    position: absolute;
+    z-index: 0;
+    top: 50%;
+    right: clamp(28px, 4vw, 80px);
+    width: min(29vw, 440px);
+    margin: 0;
+    transform: translateY(-50%);
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.about-portrait::after {
+    position: absolute;
+    inset: 0;
+    content: '';
+    pointer-events: none;
+    background: linear-gradient(to bottom, transparent 45%, rgba(0, 0, 0, .62) 76%, #000 100%);
+    box-shadow: inset 0 0 72px 42px #000;
+}
+
+.about-portrait img {
+    display: block;
+    width: 100%;
+    height: auto;
 }
 
 .section-label {
@@ -579,6 +613,19 @@ h2.reveal-side {
         font-size: 2.15rem;
         line-height: 1;
         letter-spacing: -.055em;
+    }
+
+    .about-copy {
+        width: 100%;
+    }
+
+    .about-portrait {
+        position: relative;
+        top: auto;
+        right: auto;
+        width: min(78vw, 420px);
+        margin: 64px auto 0;
+        transform: none;
     }
 
     .reveal-side {
