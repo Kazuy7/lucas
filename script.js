@@ -4,6 +4,7 @@ const canvas = document.querySelector('#text-video');
 const context = canvas.getContext('2d');
 const mask = document.createElement('canvas');
 const maskContext = mask.getContext('2d');
+const heroSection = document.querySelector('.hero');
 const title = document.querySelector('.container-name h1');
 const subtitle = document.querySelector('.hero-title p');
 const scrollHint = document.querySelector('.scroll-hint');
@@ -149,6 +150,7 @@ const projectData = document.querySelector('#projects-data');
 const showcaseSourceCards = projectData ? [...projectData.content.querySelectorAll('.project-card')] : [];
 
 const editorialList = document.querySelector('.editorial-list');
+let activeEditorialPreview = null;
 
 if (editorialList && showcaseSourceCards.length) {
     showcaseSourceCards.forEach((sourceCard, index) => {
@@ -161,6 +163,7 @@ if (editorialList && showcaseSourceCards.length) {
         const accessUrl = sourceLink.getAttribute('href');
         const accessLink = /^https?:\/\//i.test(accessUrl) ? sourceLink : null;
         const preview = sourceCard.querySelector('.project-preview').cloneNode(true);
+        const previewVideo = preview.querySelector('video');
         const description = sourceCard.querySelector('.project-overlay p').cloneNode(true);
         const actions = document.createElement('div');
         const moreButton = document.createElement('button');
@@ -169,6 +172,10 @@ if (editorialList && showcaseSourceCards.length) {
         moreButton.type = 'button';
         moreButton.innerHTML = 'Ver mais <svg class="button-eye-icon" viewBox="0 0 16 12" aria-hidden="true"><path d="M1 6s2.2-4.5 7-4.5S15 6 15 6s-2.2 4.5-7 4.5S1 6 1 6Z"></path><circle cx="8" cy="6" r="2"></circle></svg>';
         sourceLink.remove();
+        previewVideo.autoplay = false;
+        previewVideo.removeAttribute('autoplay');
+        previewVideo.preload = 'none';
+        previewVideo.pause();
         actions.append(moreButton);
         if (accessLink) {
             accessLink.className = 'editorial-access-link';
@@ -183,14 +190,29 @@ if (editorialList && showcaseSourceCards.length) {
         item.append(info, preview);
         editorialList.appendChild(item);
 
-        item.addEventListener('mouseenter', () => item.classList.add('is-active'));
-        item.addEventListener('mouseleave', () => item.classList.remove('is-active'));
+        item.addEventListener('mouseenter', () => {
+            item.classList.add('is-active');
+            if (activeEditorialPreview && activeEditorialPreview !== previewVideo) {
+                activeEditorialPreview.pause();
+            }
+            activeEditorialPreview = previewVideo;
+            previewVideo.play().catch(() => {});
+        });
+        item.addEventListener('mouseleave', () => {
+            item.classList.remove('is-active');
+            previewVideo.pause();
+            if (activeEditorialPreview === previewVideo) activeEditorialPreview = null;
+        });
         item.addEventListener('mousemove', (event) => {
             if (window.matchMedia('(hover: none), (pointer: coarse)').matches) return;
             preview.style.left = `${event.clientX}px`;
             preview.style.top = `${event.clientY}px`;
         });
-        moreButton.addEventListener('click', () => openProjectModal(item));
+        moreButton.addEventListener('click', () => {
+            previewVideo.pause();
+            if (activeEditorialPreview === previewVideo) activeEditorialPreview = null;
+            openProjectModal(item);
+        });
     });
 }
 
@@ -251,7 +273,7 @@ if (projectModal) {
 
 
 function resizeCanvas() {
-    const ratio = window.devicePixelRatio || 1;
+    const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
     canvas.width = window.innerWidth * ratio;
     canvas.height = window.innerHeight * ratio;
     mask.width = canvas.width;
@@ -270,9 +292,30 @@ function drawTextMask(element) {
     maskContext.fillText(element.textContent, x, box.top + box.height * .78);
 }
 
+let heroIsVisible = false;
+let textVideoFrameScheduled = false;
+let lastDrawnVideoTime = -1;
+
+function scheduleTextVideoFrame() {
+    if (!heroIsVisible || textVideoFrameScheduled) return;
+    textVideoFrameScheduled = true;
+    const schedule = video.requestVideoFrameCallback
+        ? (callback) => video.requestVideoFrameCallback(callback)
+        : (callback) => requestAnimationFrame(callback);
+    schedule(() => {
+        textVideoFrameScheduled = false;
+        drawVideoInText();
+    });
+}
+
 function drawVideoInText() {
+    if (!heroIsVisible) return;
     if (video.readyState < 2) {
-        requestAnimationFrame(drawVideoInText);
+        scheduleTextVideoFrame();
+        return;
+    }
+    if (video.currentTime === lastDrawnVideoTime) {
+        scheduleTextVideoFrame();
         return;
     }
     context.clearRect(0, 0, window.innerWidth, window.innerHeight);
@@ -283,8 +326,22 @@ function drawVideoInText() {
     context.globalCompositeOperation = 'destination-in';
     context.drawImage(mask, 0, 0, window.innerWidth, window.innerHeight);
     context.globalCompositeOperation = 'source-over';
-    requestAnimationFrame(drawVideoInText);
+    lastDrawnVideoTime = video.currentTime;
+    scheduleTextVideoFrame();
 }
+
+const heroVisibilityObserver = new IntersectionObserver(([entry]) => {
+    heroIsVisible = entry.isIntersecting;
+    if (heroIsVisible) {
+        scheduleTextVideoFrame();
+    } else {
+        context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        maskContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        lastDrawnVideoTime = -1;
+    }
+}, { threshold: 0 });
+heroVisibilityObserver.observe(heroSection);
+video.addEventListener('loadeddata', scheduleTextVideoFrame, { once: true });
 function updateParallax() {
     parallaxItems.forEach((item) => {
         const offset = (window.innerHeight / 2 - item.getBoundingClientRect().top) * Number(item.dataset.parallax);
@@ -296,4 +353,3 @@ window.addEventListener('resize', updateParallax);
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 updateParallax();
-drawVideoInText();
