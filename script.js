@@ -4,6 +4,7 @@ const canvas = document.querySelector('#text-video');
 const context = canvas.getContext('2d');
 const mask = document.createElement('canvas');
 const maskContext = mask.getContext('2d');
+const heroSection = document.querySelector('.hero');
 const title = document.querySelector('.container-name h1');
 const subtitle = document.querySelector('.hero-title p');
 const scrollHint = document.querySelector('.scroll-hint');
@@ -84,6 +85,15 @@ function animateScrollDots() {
 window.addEventListener('scroll', updateScrollDots, { passive: true });
 window.addEventListener('resize', updateScrollDots);
 animateScrollDots();
+
+const backToTopButton = document.querySelector('.back-to-top');
+const updateBackToTopVisibility = () => {
+    backToTopButton.classList.toggle('is-visible', window.scrollY > window.innerHeight * .6);
+};
+backToTopButton.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+window.addEventListener('scroll', updateBackToTopVisibility, { passive: true });
+updateBackToTopVisibility();
+
 const translations = {
     pt: { role: 'DESENVOLVEDOR FULL STACK', scrollHint: 'role para explorar ↓', aboutLabel: '01 — Sobre mim', aboutTitle: 'Construo experiências', aboutTitleEm: 'digitais com propósito.', aboutText: 'Sou formado em Gestão da Tecnologia da Informação e atuo há mais de 3 anos no mercado como programador. Sou apaixonado por tecnologia e criação, transformando ideias em soluções digitais funcionais, bonitas e focadas em pessoas. Ao longo da minha jornada, venho desenvolvendo experiências que unem código, usabilidade e criatividade.', projectsLabel: '02 — Projetos', projectsTitle: 'Trabalhos selecionados', stackLabel: '03 — Minha stack', stackTitle: 'Código que transforma ideias.', stackText: 'Tecnologias que uso para criar produtos digitais funcionais, rápidos e preparados para evoluir.', stackFrontend: 'Front-end', stackBackend: 'Back-end', stackData: 'Dados', stackTools: 'Ferramentas', contactLabel: '04 — Meus contatos', contactTitle: 'Vamos criar algo', contactTitleEm: 'juntos?' },
     en: { role: 'FULL STACK DEVELOPER', scrollHint: 'scroll to explore ↓', aboutLabel: '01 — About me', aboutTitle: 'I build experiences', aboutTitleEm: 'with purpose.', aboutText: 'I have a degree in Information Technology Management and have been working as a programmer for over 3 years. I am passionate about technology and creation, turning ideas into functional, beautiful digital solutions focused on people. Throughout my journey, I have developed experiences that bring together code, usability, and creativity.', projectsLabel: '02 — Projects', projectsTitle: 'Selected work', stackLabel: '03 — My stack', stackTitle: 'Code that turns ideas into reality.', stackText: 'Technologies I use to create functional, fast, and scalable digital products.', stackFrontend: 'Front-end', stackBackend: 'Back-end', stackData: 'Data', stackTools: 'Tools', contactLabel: '04 — Get in touch', contactTitle: 'Let’s create something', contactTitleEm: 'together?' }
@@ -140,6 +150,7 @@ const projectData = document.querySelector('#projects-data');
 const showcaseSourceCards = projectData ? [...projectData.content.querySelectorAll('.project-card')] : [];
 
 const editorialList = document.querySelector('.editorial-list');
+let activeEditorialPreview = null;
 
 if (editorialList && showcaseSourceCards.length) {
     showcaseSourceCards.forEach((sourceCard, index) => {
@@ -149,21 +160,23 @@ if (editorialList && showcaseSourceCards.length) {
 
         const info = sourceCard.querySelector('.project-info').cloneNode(true);
         const sourceLink = info.querySelector('a');
-        const accessLink = sourceLink.getAttribute('href') !== '#' ? sourceLink : null;
+        const accessUrl = sourceLink.getAttribute('href');
+        const accessLink = /^https?:\/\//i.test(accessUrl) ? sourceLink : null;
         const preview = sourceCard.querySelector('.project-preview').cloneNode(true);
+        const previewVideo = preview.querySelector('video');
         const description = sourceCard.querySelector('.project-overlay p').cloneNode(true);
         const actions = document.createElement('div');
-        const watchButton = document.createElement('button');
-        const descriptionButton = document.createElement('button');
+        const moreButton = document.createElement('button');
         actions.className = 'editorial-actions';
-        watchButton.className = 'editorial-watch-button';
-        watchButton.type = 'button';
-        watchButton.innerHTML = 'Assistir <svg class="button-eye-icon" viewBox="0 0 16 12" aria-hidden="true"><path d="M1 6s2.2-4.5 7-4.5S15 6 15 6s-2.2 4.5-7 4.5S1 6 1 6Z"></path><circle cx="8" cy="6" r="2"></circle></svg>';
-        descriptionButton.className = 'editorial-description-button';
-        descriptionButton.type = 'button';
-        descriptionButton.textContent = 'Descrição +';
+        moreButton.className = 'editorial-more-button';
+        moreButton.type = 'button';
+        moreButton.innerHTML = 'Ver mais <svg class="button-eye-icon" viewBox="0 0 16 12" aria-hidden="true"><path d="M1 6s2.2-4.5 7-4.5S15 6 15 6s-2.2 4.5-7 4.5S1 6 1 6Z"></path><circle cx="8" cy="6" r="2"></circle></svg>';
         sourceLink.remove();
-        actions.append(watchButton, descriptionButton);
+        previewVideo.autoplay = false;
+        previewVideo.removeAttribute('autoplay');
+        previewVideo.preload = 'none';
+        previewVideo.pause();
+        actions.append(moreButton);
         if (accessLink) {
             accessLink.className = 'editorial-access-link';
             accessLink.textContent = 'Acessar ↗';
@@ -177,20 +190,33 @@ if (editorialList && showcaseSourceCards.length) {
         item.append(info, preview);
         editorialList.appendChild(item);
 
-        item.addEventListener('mouseenter', () => item.classList.add('is-active'));
-        item.addEventListener('mouseleave', () => item.classList.remove('is-active'));
+        item.addEventListener('mouseenter', () => {
+            item.classList.add('is-active');
+            if (activeEditorialPreview && activeEditorialPreview !== previewVideo) {
+                activeEditorialPreview.pause();
+            }
+            activeEditorialPreview = previewVideo;
+            previewVideo.play().catch(() => {});
+        });
+        item.addEventListener('mouseleave', () => {
+            item.classList.remove('is-active');
+            previewVideo.pause();
+            if (activeEditorialPreview === previewVideo) activeEditorialPreview = null;
+        });
         item.addEventListener('mousemove', (event) => {
             if (window.matchMedia('(hover: none), (pointer: coarse)').matches) return;
             preview.style.left = `${event.clientX}px`;
             preview.style.top = `${event.clientY}px`;
         });
-        watchButton.addEventListener('click', () => openProjectModal(item, true));
-        descriptionButton.addEventListener('click', () => openProjectModal(item));
+        moreButton.addEventListener('click', () => {
+            previewVideo.pause();
+            if (activeEditorialPreview === previewVideo) activeEditorialPreview = null;
+            openProjectModal(item);
+        });
     });
 }
 
 const projectModal = document.querySelector('.project-modal');
-const projectModalPanel = document.querySelector('.project-modal-panel');
 const projectModalVideo = document.querySelector('.project-modal-video');
 const projectModalTitle = document.querySelector('#project-modal-title');
 const projectModalDescription = document.querySelector('.project-modal-description');
@@ -217,20 +243,13 @@ const renderProjectModal = (item) => {
     projectModalVideo.load();
     projectModalVideo.play().catch(() => {});
 };
-const openProjectModal = (item, startFullscreen = false) => {
+const openProjectModal = (item) => {
     projectModalIndex = projectModalItems.indexOf(item);
     renderProjectModal(item);
     projectModalVideo.controls = true;
-    projectModalVideo.muted = !startFullscreen;
+    projectModalVideo.muted = true;
     projectModal.classList.add('is-open');
     projectModal.setAttribute('aria-hidden', 'false');
-    if (startFullscreen) {
-        const requestFullscreen = projectModal.requestFullscreen || projectModal.webkitRequestFullscreen;
-        if (requestFullscreen) {
-            const fullscreenRequest = requestFullscreen.call(projectModal);
-            if (fullscreenRequest?.catch) fullscreenRequest.catch(() => {});
-        }
-    }
 };
 
 if (projectModal) {
@@ -254,7 +273,7 @@ if (projectModal) {
 
 
 function resizeCanvas() {
-    const ratio = window.devicePixelRatio || 1;
+    const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
     canvas.width = window.innerWidth * ratio;
     canvas.height = window.innerHeight * ratio;
     mask.width = canvas.width;
@@ -273,9 +292,30 @@ function drawTextMask(element) {
     maskContext.fillText(element.textContent, x, box.top + box.height * .78);
 }
 
+let heroIsVisible = false;
+let textVideoFrameScheduled = false;
+let lastDrawnVideoTime = -1;
+
+function scheduleTextVideoFrame() {
+    if (!heroIsVisible || textVideoFrameScheduled) return;
+    textVideoFrameScheduled = true;
+    const schedule = video.requestVideoFrameCallback
+        ? (callback) => video.requestVideoFrameCallback(callback)
+        : (callback) => requestAnimationFrame(callback);
+    schedule(() => {
+        textVideoFrameScheduled = false;
+        drawVideoInText();
+    });
+}
+
 function drawVideoInText() {
+    if (!heroIsVisible) return;
     if (video.readyState < 2) {
-        requestAnimationFrame(drawVideoInText);
+        scheduleTextVideoFrame();
+        return;
+    }
+    if (video.currentTime === lastDrawnVideoTime) {
+        scheduleTextVideoFrame();
         return;
     }
     context.clearRect(0, 0, window.innerWidth, window.innerHeight);
@@ -286,8 +326,22 @@ function drawVideoInText() {
     context.globalCompositeOperation = 'destination-in';
     context.drawImage(mask, 0, 0, window.innerWidth, window.innerHeight);
     context.globalCompositeOperation = 'source-over';
-    requestAnimationFrame(drawVideoInText);
+    lastDrawnVideoTime = video.currentTime;
+    scheduleTextVideoFrame();
 }
+
+const heroVisibilityObserver = new IntersectionObserver(([entry]) => {
+    heroIsVisible = entry.isIntersecting;
+    if (heroIsVisible) {
+        scheduleTextVideoFrame();
+    } else {
+        context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        maskContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        lastDrawnVideoTime = -1;
+    }
+}, { threshold: 0 });
+heroVisibilityObserver.observe(heroSection);
+video.addEventListener('loadeddata', scheduleTextVideoFrame, { once: true });
 function updateParallax() {
     parallaxItems.forEach((item) => {
         const offset = (window.innerHeight / 2 - item.getBoundingClientRect().top) * Number(item.dataset.parallax);
@@ -299,4 +353,3 @@ window.addEventListener('resize', updateParallax);
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 updateParallax();
-drawVideoInText();
