@@ -113,6 +113,29 @@ a, button, video { cursor: none !important; }
     stroke-linejoin: miter;
 }
 
+/* O celular usa o vídeo; os demais aparelhos, o shader. A classe vem do script.js. */
+#video-background {
+    display: none;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 120vh;
+    object-fit: cover;
+    z-index: 0;
+    filter: blur(5px) grayscale(1) brightness(.5);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 83.3%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 83.3%, transparent 100%);
+}
+
+.use-video #video-background {
+    display: block;
+}
+
+.use-video #shader-background,
+.no-shader #shader-background {
+    display: none;
+}
+
 #shader-background {
     position: absolute;
     inset: 0;
