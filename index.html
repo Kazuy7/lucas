@@ -30,9 +30,7 @@
     <button class="back-to-top" type="button" aria-label="Voltar para o topo">
         <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 12 6-6 6 6"></path></svg>
     </button>
-    <video autoplay muted loop id="video-background">
-        <source src="midia/fumaca-vermelha.mp4">
-    </video>
+    <canvas id="shader-background" aria-hidden="true"></canvas>
     <canvas id="text-video"></canvas>
     <main>
         <section class="hero container-name">
@@ -234,6 +232,7 @@
             </div>
         </section>
     </main>
+    <script src="shader.js"></script>
     <script src="script.js"></script>
 </body>
 
