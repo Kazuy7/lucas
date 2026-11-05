@@ -1,5 +1,6 @@
 const parallaxItems = document.querySelectorAll('[data-parallax]');
 const shaderCanvas = document.querySelector('#shader-background');
+const video = document.querySelector('#video-background');
 const canvas = document.querySelector('#text-video');
 const context = canvas.getContext('2d');
 const mask = document.createElement('canvas');
@@ -44,14 +45,13 @@ let scrollTarget = 0;
 let scrollVelocity = 0;
 let previousScroll = window.scrollY;
 const dotOffsets = scrollDots.map(() => 0);
-let shaderScrollSpeed = 0;
-const baseShaderRate = 1;
-const maxShaderRate = 2.5;
-const heroShader = startHeroShader(shaderCanvas, { onTextFrame: drawShaderInText });
-if (!heroShader) {
-    shaderCanvas.remove();
-    document.documentElement.classList.add('no-shader');
-}
+let backgroundScrollSpeed = 0;
+const baseBackgroundRate = 1;
+const maxBackgroundRate = 2.5;
+// Mesmo breakpoint do CSS, mais o celular deitado, que passa dos 700px de largura.
+const usesVideoBackground = window.matchMedia('(max-width: 700px), (pointer: coarse) and (max-height: 500px)');
+let heroShader = null;
+let shaderUnavailable = false;
 
 function updateScrollDots() {
     scrollTarget = window.scrollY;
@@ -76,10 +76,16 @@ function animateScrollDots() {
 
     scrollVelocity *= .88;
 
-    // O shader sempre avança; a intensidade do scroll controla a aceleração.
-    shaderScrollSpeed += (scrollVelocity - shaderScrollSpeed) * .16;
-    if (Math.abs(shaderScrollSpeed) < 0.02) shaderScrollSpeed = 0;
-    heroShader?.setSpeed(Math.min(maxShaderRate, baseShaderRate + Math.abs(shaderScrollSpeed) * .035));
+    // O fundo sempre avança; a intensidade do scroll controla a aceleração.
+    backgroundScrollSpeed += (scrollVelocity - backgroundScrollSpeed) * .16;
+    if (Math.abs(backgroundScrollSpeed) < 0.02) backgroundScrollSpeed = 0;
+    const backgroundRate = Math.min(maxBackgroundRate, baseBackgroundRate + Math.abs(backgroundScrollSpeed) * .035);
+    if (!usesVideoBackground.matches) {
+        heroShader?.setSpeed(backgroundRate);
+    } else if (video.readyState >= 2 && Number.isFinite(video.duration)) {
+        video.playbackRate = backgroundRate;
+        if (video.paused) video.play().catch(() => {});
+    }
     requestAnimationFrame(animateScrollDots);
 }
 
@@ -293,29 +299,91 @@ function drawTextMask(element) {
     maskContext.fillText(element.textContent, x, box.top + box.height * .78);
 }
 
-function drawShaderInText(source) {
-    const box = shaderCanvas.getBoundingClientRect();
+function paintHeroText(source, left, top, width, height) {
     context.clearRect(0, 0, window.innerWidth, window.innerHeight);
     maskContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
     drawTextMask(title);
     drawTextMask(subtitle);
-    context.drawImage(source, box.left, box.top, box.width, box.height);
+    context.drawImage(source, left, top, width, height);
     context.globalCompositeOperation = 'destination-in';
     context.drawImage(mask, 0, 0, window.innerWidth, window.innerHeight);
     context.globalCompositeOperation = 'source-over';
 }
 
+function clearHeroText() {
+    context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    maskContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
+}
+
+function drawShaderInText(source) {
+    const box = shaderCanvas.getBoundingClientRect();
+    paintHeroText(source, box.left, box.top, box.width, box.height);
+}
+
+let heroIsVisible = false;
+let textVideoFrameScheduled = false;
+let lastDrawnVideoTime = -1;
+
+function scheduleTextVideoFrame() {
+    if (!heroIsVisible || !usesVideoBackground.matches || textVideoFrameScheduled) return;
+    textVideoFrameScheduled = true;
+    const schedule = video.requestVideoFrameCallback
+        ? (callback) => video.requestVideoFrameCallback(callback)
+        : (callback) => requestAnimationFrame(callback);
+    schedule(() => {
+        textVideoFrameScheduled = false;
+        drawVideoInText();
+    });
+}
+
+function drawVideoInText() {
+    if (!heroIsVisible || !usesVideoBackground.matches) return;
+    if (video.readyState >= 2 && video.currentTime !== lastDrawnVideoTime) {
+        paintHeroText(video, 0, 0, window.innerWidth, window.innerHeight);
+        lastDrawnVideoTime = video.currentTime;
+    }
+    scheduleTextVideoFrame();
+}
+
+function applyHeroBackground() {
+    const useVideo = usesVideoBackground.matches;
+    clearHeroText();
+    lastDrawnVideoTime = -1;
+    if (useVideo) {
+        if (!video.getAttribute('src')) video.src = video.dataset.src;
+        video.play().catch(() => {});
+    } else {
+        video.pause();
+        if (!heroShader && !shaderUnavailable) {
+            heroShader = startHeroShader(shaderCanvas, { onTextFrame: drawShaderInText });
+            shaderUnavailable = !heroShader;
+        }
+    }
+    document.documentElement.classList.toggle('use-video', useVideo);
+    document.documentElement.classList.toggle('no-shader', !useVideo && shaderUnavailable);
+    heroShader?.setTextActive(heroIsVisible && !useVideo);
+    drawVideoInText();
+}
+
+// Primeiro quadro desenhado direto: se o navegador barrar o autoplay, o título aparece mesmo assim.
+video.addEventListener('loadeddata', drawVideoInText);
+usesVideoBackground.addEventListener?.('change', applyHeroBackground);
+
 const heroVisibilityObserver = new IntersectionObserver(([entry]) => {
-    heroShader?.setTextActive(entry.isIntersecting);
-    if (!entry.isIntersecting) {
-        context.clearRect(0, 0, window.innerWidth, window.innerHeight);
-        maskContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    heroIsVisible = entry.isIntersecting;
+    heroShader?.setTextActive(heroIsVisible && !usesVideoBackground.matches);
+    if (!heroIsVisible) {
+        clearHeroText();
+        lastDrawnVideoTime = -1;
+    } else {
+        drawVideoInText();
     }
 }, { threshold: 0 });
 heroVisibilityObserver.observe(heroSection);
 // Com movimento reduzido o shader fica parado: o texto precisa ser redesenhado quando muda de lugar.
 window.addEventListener('scroll', () => heroShader?.redraw(), { passive: true });
 document.fonts?.ready.then(() => heroShader?.redraw());
+applyHeroBackground();
 function updateParallax() {
     parallaxItems.forEach((item) => {
         const offset = (window.innerHeight / 2 - item.getBoundingClientRect().top) * Number(item.dataset.parallax);
